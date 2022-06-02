@@ -1,0 +1,15 @@
+.file-item {
+  width: 100%;
+}
+
+.file-item > button {
+  display: flex;
+  gap: 5px;
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  align-items: center;
+  box-shadow: 0 0 3px 0px var(--shadow-color);
+  background: var(--white-color);
+  border-radius: 3px;
+}
