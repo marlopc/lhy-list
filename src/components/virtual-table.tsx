@@ -1,13 +1,20 @@
 import React, { MouseEvent } from "react";
 import type { ProductRow } from "../types";
-import { useStore } from "../contexts/store";
+import { useFile } from "../contexts/file";
 import { useVirtual } from "react-virtual";
-import { toast, CheckmarkIcon } from "react-hot-toast";
+import { toast, CheckmarkIcon, Toast } from "react-hot-toast";
+import * as deleteStorage from "../lib/deleteStorage";
 
-function VirtualTable({ rows }: { rows: ProductRow[] }) {
+function VirtualTable({
+  editRow,
+  rows,
+}: {
+  editRow: (id: string) => void;
+  rows: ProductRow[];
+}) {
   const parentRef = React.useRef<HTMLDivElement>(null);
 
-  const { setEdition, loadSheetFile } = useStore();
+  const { filename, refetchFile } = useFile();
 
   const virtualizer = useVirtual({
     size: rows.length,
@@ -22,9 +29,17 @@ function VirtualTable({ rows }: { rows: ProductRow[] }) {
     if (deleted instanceof Error) {
       toast.error(deleted.message);
     } else {
-      delete deleted.id;
+      deleteStorage.push(deleted, filename);
 
-      window.localStorage.setItem("last-deleted", JSON.stringify(deleted));
+      const handleUndo = async function handleUndo(t: Toast) {
+        const recovered = deleteStorage.recover(deleted.id);
+
+        toast.dismiss(t.id);
+
+        await window.api["row:add"](recovered);
+
+        refetchFile();
+      };
 
       toast(
         (t) => (
@@ -38,14 +53,7 @@ function VirtualTable({ rows }: { rows: ProductRow[] }) {
                 <b>{deleted.nombre}</b>
               </div>
             </div>
-            <button
-              onClick={async () => {
-                toast.dismiss(t.id);
-                await window.api["row:add"](deleted);
-                loadSheetFile();
-              }}
-              className="toast-undo-button"
-            >
+            <button onClick={() => handleUndo(t)} className="toast-undo-button">
               Revertir
             </button>
           </span>
@@ -58,7 +66,7 @@ function VirtualTable({ rows }: { rows: ProductRow[] }) {
       );
     }
 
-    await loadSheetFile();
+    refetchFile();
   }
 
   function handleClick(e: MouseEvent<HTMLUListElement>) {
@@ -77,7 +85,7 @@ function VirtualTable({ rows }: { rows: ProductRow[] }) {
     if (name === "delete") {
       handleDelete(row);
     } else if (name === "edit") {
-      setEdition(row);
+      editRow(row);
     } else {
       return;
     }

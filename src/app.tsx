@@ -1,32 +1,16 @@
 import React from "react";
-import { useStore } from "./contexts/store";
+import { useFile } from "./contexts/file";
 import FileSelection from "./screens/file-selection";
-import Table from "./screens/table";
+import Sheet from "./screens/sheet";
 import { Toaster } from "react-hot-toast";
 
 function App() {
-  const { screen } = useStore();
-
-  function getScreen() {
-    switch (screen) {
-      case "table": {
-        return <Table />;
-      }
-
-      case "files": {
-        return <FileSelection />;
-      }
-
-      default: {
-        return null;
-      }
-    }
-  }
+  const { sheet } = useFile();
 
   return (
     <>
       <Toaster position="top-center" reverseOrder={false} />
-      <main>{getScreen()}</main>
+      <main>{sheet ? <Sheet /> : <FileSelection />}</main>
     </>
   );
 }

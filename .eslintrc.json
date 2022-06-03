@@ -22,7 +22,10 @@
   },
   "plugins": ["react", "@typescript-eslint", "prettier"],
   "rules": {
-    "require-jsdoc": "off"
+    "require-jsdoc": "off",
+    "@typescript-eslint/no-unused-vars": ["error", {
+      "ignoreRestSibblings": true,
+    }]
   },
   "settings": {
     "react": {

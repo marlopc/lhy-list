@@ -48,7 +48,7 @@ function withHandlers(main: IpcMain) {
 
       const newRow = globalFile.getSheet("Productos").add(row, {
         fn: (row) => regex.test(row.nombre),
-        message: "Ya existe un producto con el mismo nombre.",
+        message: "Ya existe un producto con el mismo nombre",
       });
 
       return newRow;
@@ -67,7 +67,7 @@ function withHandlers(main: IpcMain) {
           .getSheet("Productos")
           .update(id, defaults, {
             fn: (row) => row.id !== id && regex.test(row.nombre),
-            message: "Ya existe un producto con el mismo nombre.",
+            message: "Ya existe un producto con el mismo nombre",
           });
 
         return updatedRow;

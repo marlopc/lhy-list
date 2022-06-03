@@ -88,6 +88,7 @@ ul {
   display: flex;
   width: 100%;
   height: 100%;
+  min-height: 400px;
 }
 
 .selection-page {
@@ -144,6 +145,7 @@ ul {
 }
 
 .table-side {
+  min-width: 70px;
   width: 10%; 
   display: flex;
   align-items: center;
@@ -203,12 +205,18 @@ ul {
   transition: box-shadow 150ms;
 }
 
-.table-header-search:hover {
+.table-header-search:disabled {
+  cursor: not-allowed;
+  box-shadow: inset 0 0 4px 1px var(--shadow-hover-color);
+  opacity: 0.5;
+}
+
+.table-header-search:not(:disabled):hover {
   box-shadow: 0 1px 6px 0 var(--shadow-hover-color);
 }
 
-.table-header-search:focus,
-.table-header-search:active {
+.table-header-search:not(:disabled):focus,
+.table-header-search:not(:disabled):active {
   box-shadow: 0 3px 8px 1px var(--shadow-hover-color);
 }
 
@@ -261,18 +269,21 @@ ul {
 }
 
 .table-list-parent::-webkit-scrollbar,
-.selection-pick ul::-webkit-scrollbar {
+.selection-pick ul::-webkit-scrollbar,
+.settings-recover ul::-webkit-scrollbar {
   width: 10px;
 }
 
 .table-list-parent::-webkit-scrollbar-track,
-.selection-pick ul::-webkit-scrollbar-track {
+.selection-pick ul::-webkit-scrollbar-track,
+.settings-recover ul::-webkit-scrollbar-track {
   background: var(--shadow-color);
   border-radius: 25px;
 }
 
 .table-list-parent::-webkit-scrollbar-thumb,
-.selection-pick ul::-webkit-scrollbar-thumb {
+.selection-pick ul::-webkit-scrollbar-thumb,
+.settings-recover ul::-webkit-scrollbar-thumb {
   background: var(--main-color);
   border-radius: 25px;
 }
@@ -323,7 +334,7 @@ ul {
   font-weight: 600;
 }
 
-.table-form {
+.page {
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -333,35 +344,35 @@ ul {
   padding: 30px 0;
 }
 
-.table-form-header {
+.page-header {
   display: flex;
   align-items: center;
   min-height: 55px;
 }
 
-.table-form-header > p {
+.page-header > p {
   font-size: 22px;
 }
 
-.table-form-form {
+.page-body {
   background: var(--white-color);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 15px;
 }
 
-.table-form-input {
+.form-input {
   display: flex;
   flex-direction: column;
 }
 
-.table-form-input > label {
+.form-input > label {
   font-size: 16px;
   margin: 0 0 10px 1px;
   font-weight: 600;
 }
 
-.table-form-input > input {
+.form-input > input {
   padding: 5px 8px;
   margin-bottom: 15px;
   font-size: 16px;
@@ -370,7 +381,7 @@ ul {
   border-radius: 5px;
 }
 
-.table-form-form > button {
+.page-body > button {
   background: var(--main-color);
   color: var(--white-color);
   font-size: 18px;
@@ -383,6 +394,68 @@ ul {
   align-self: center;
 }
 
-.table-form-form > button:hover {
+.page-body > button:hover {
   box-shadow: 0 3px 6px 0 var(--shadow-hover-color);
+}
+
+.settings-check {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.settings-check > :first-child {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 5px;
+}
+
+.settings-check > :nth-child(2) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: min-content;
+}
+
+.settings-recover > :first-child {
+  display: flex;
+  justify-content: space-between;
+}
+
+.settings-recover > :nth-child(2) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 150px;
+  width: 100%;
+}
+
+.settings-recover ul {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  height: 100%;
+  width: 100%;
+  max-height: 100%;
+  overflow-y: scroll;
+  margin-top: 10px;
+}
+
+.settings-recover li {
+  width: 100%;
+  padding: 0 10px 0 3px;
+}
+
+.settings-recover li button {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  padding: 5px 8px;
+}
+
+.settings-recover li button:hover {
+  box-shadow: 0 0 3px 0 var(--shadow-color);
 }

@@ -1,11 +1,12 @@
 import React, { FormEvent } from "react";
 import { toast } from "react-hot-toast";
-import File from "../components/file/file";
-import { useStore } from "../contexts/store";
+import File from "../../components/file";
+import { useFile } from "../../contexts/file";
+import * as keepOpenStorage from "../../lib/keepOpenStorage";
 
 function FileSelection() {
   const [files, setFiles] = React.useState([]);
-  const { selectFile } = useStore();
+  const { loadFile } = useFile();
 
   const getFiles = React.useCallback(async () => {
     const response = await window.api["onedrive:read"]();
@@ -21,10 +22,10 @@ function FileSelection() {
   }, []);
 
   React.useEffect(() => {
-    const keepOpenFile = window.localStorage.getItem("keep-open");
+    const keepOpenFile = keepOpenStorage.get();
 
     if (keepOpenFile) {
-      selectFile(keepOpenFile);
+      loadFile(keepOpenFile);
     } else {
       getFiles();
     }
@@ -37,14 +38,14 @@ function FileSelection() {
       return;
     }
 
-    selectFile(filename);
+    loadFile(filename);
   }
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     // @ts-ignore
     const filename = e.target.filename.value;
 
-    selectFile(filename);
+    loadFile(filename);
 
     e.preventDefault();
   }

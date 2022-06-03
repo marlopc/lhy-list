@@ -5,7 +5,9 @@ import os from "os";
 import path from "path";
 
 export type Attributes = { [x: string]: any };
+
 export type RowWithId<R> = R & { id: string };
+
 export type Row = { [x: string]: any };
 
 export type SheetMethods<R> = {
@@ -21,12 +23,14 @@ export type SheetMethods<R> = {
     check?: { fn: (row: R) => boolean; message: string }
   ) => RowWithId<R>;
 };
+
 export type SheetValues<R> = {
   keys: string[];
   name: string;
   rows: RowWithId<R>[];
   attributes: Attributes;
 };
+
 export type SheetObject<R> = SheetMethods<R> & SheetValues<R>;
 
 export default class OneDriveXlsxFileEditor<R extends Row> {
@@ -58,8 +62,7 @@ export default class OneDriveXlsxFileEditor<R extends Row> {
 
   private readonly _currentUser = os.userInfo().username;
   private readonly _oneDrivePath =
-    process.env.ONEDRIVE_FOLDER ??
-    path.join("Users", this._currentUser, "OneDrive");
+    process.env.ONEDRIVE_FOLDER ?? `C:\\Users\\${this._currentUser}\\OneDrive`;
 
   private _hasExt(filename: string) {
     filename = filename.trim();
@@ -67,10 +70,10 @@ export default class OneDriveXlsxFileEditor<R extends Row> {
   }
 
   private _withOneDrivePath(filename: string) {
-    return `${this._oneDrivePath}/${filename}`;
+    return `${this._oneDrivePath}${path.sep}${filename}`;
   }
 
-  private _getAddMethod(sheet: Omit<SheetObject<R>, keyof SheetMethods<R>>) {
+  private _getAddMethod(sheet: SheetValues<R>) {
     return (
       newEntry: R,
       check?: { fn: (row: R) => boolean; message: string }
@@ -96,7 +99,7 @@ export default class OneDriveXlsxFileEditor<R extends Row> {
     };
   }
 
-  private _getDeleteMethod(sheet: Omit<SheetObject<R>, keyof SheetMethods<R>>) {
+  private _getDeleteMethod(sheet: SheetValues<R>) {
     return (id: string) => {
       let deletedRow: RowWithId<R> = null;
 
@@ -115,7 +118,7 @@ export default class OneDriveXlsxFileEditor<R extends Row> {
     };
   }
 
-  private _getSearchMethod(sheet: Omit<SheetObject<R>, keyof SheetMethods<R>>) {
+  private _getSearchMethod(sheet: SheetValues<R>) {
     return (name: string, field: string) => {
       const regex = new RegExp(name, "i");
       const results = sheet.rows.filter((row) => {
@@ -128,7 +131,7 @@ export default class OneDriveXlsxFileEditor<R extends Row> {
     };
   }
 
-  private _getUpdateMethod(sheet: Omit<SheetObject<R>, keyof SheetMethods<R>>) {
+  private _getUpdateMethod(sheet: SheetValues<R>) {
     return (
       id: string,
       defaults: R,
