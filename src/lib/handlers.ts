@@ -1,5 +1,6 @@
-import { IpcMain } from "electron";
 import fs from "fs/promises";
+import os from "os";
+import { IpcMain } from "electron";
 import type { ProductRow } from "../types";
 import OneDriveXlsxFileEditor from "./xlsx";
 
@@ -9,7 +10,8 @@ var globalFile: OneDriveXlsxFileEditor<ProductRow> = null;
 function withHandlers(main: IpcMain) {
   main.handle("onedrive:read", async () => {
     const oneDriveFolder =
-      process.env.ONEDRIVE_FOLDER ?? `Users\\${process.env.username}\\Onedrive`;
+      process.env.ONEDRIVE_FOLDER ??
+      `Users\\${os.userInfo().username}\\Onedrive`;
 
     try {
       const files = await fs.readdir(oneDriveFolder);
