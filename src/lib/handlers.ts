@@ -11,7 +11,7 @@ function withHandlers(main: IpcMain) {
   main.handle("onedrive:read", async () => {
     const oneDriveFolder =
       process.env.ONEDRIVE_FOLDER ??
-      `Users\\${os.userInfo().username}\\Onedrive`;
+      `C:\\Users\\${os.userInfo().username}\\Onedrive`;
 
     try {
       const files = await fs.readdir(oneDriveFolder);
