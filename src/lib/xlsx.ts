@@ -1,7 +1,6 @@
 import fs from "fs";
 import * as xlsx from "xlsx";
 import { nanoid } from "nanoid";
-import os from "os";
 import path from "path";
 
 export type Attributes = { [x: string]: any };
@@ -33,13 +32,16 @@ export type SheetValues<R> = {
 
 export type SheetObject<R> = SheetMethods<R> & SheetValues<R>;
 
-export default class OneDriveXlsxFileEditor<R extends Row> {
-  constructor(filename: string, sheet?: { name: string; keys: string[] }) {
-    filename = filename.trim();
+export default class XlsxFileEditor<R extends Row> {
+  constructor(
+    file: { dir: string; filename: string },
+    sheet?: { name: string; keys: string[] }
+  ) {
+    const { dir, filename } = file;
 
-    this.filename = this._hasExt(filename) ? filename : `${filename}.xlsx`;
+    this.filename = this._withExtension(filename);
 
-    this.filepath = this._withOneDrivePath(this.filename);
+    this.filepath = this._join(dir, this.filename);
 
     if (!fs.existsSync(this.filepath)) {
       const workbook = xlsx.utils.book_new();
@@ -55,22 +57,42 @@ export default class OneDriveXlsxFileEditor<R extends Row> {
       this.isNew = true;
     }
 
-    const file = fs.readFileSync(this.filepath);
+    const data = fs.readFileSync(this.filepath);
 
-    this.file = xlsx.read(file);
+    this.file = xlsx.read(data);
   }
 
-  private readonly _currentUser = os.userInfo().username;
-  private readonly _oneDrivePath =
-    process.env.ONEDRIVE_FOLDER ?? `C:\\Users\\${this._currentUser}\\OneDrive`;
+  public readonly isNew: boolean = false;
+  public readonly filepath: string;
+  public readonly file: xlsx.WorkBook;
+  public readonly sheets: SheetObject<R>[] = [];
+  public readonly filename: string;
 
-  private _hasExt(filename: string) {
+  public addSheet(name: string, keys: string[]): Error | null {
+    if (Object.prototype.hasOwnProperty.call(this.file.Sheets, name)) {
+      throw new Error("Sheet already in book");
+    }
+
+    const worksheet = xlsx.utils.aoa_to_sheet([keys]);
+
+    xlsx.utils.book_append_sheet(this.file, worksheet, name);
+
+    return this._tryWrite();
+  }
+
+  public getSheet(name: string) {
+    return this._parseSheet(name);
+  }
+
+  private _withExtension(filename: string) {
     filename = filename.trim();
-    return /.xlsx$/i.test(filename);
+
+    return /.xlsx$/i.test(filename) ? filename : `${filename}.xlsx`;
   }
 
-  private _withOneDrivePath(filename: string) {
-    return `${this._oneDrivePath}${path.sep}${filename}`;
+  private _join(...args: string[]) {
+    const platform = process.platform === "win32" ? "win32" : "posix";
+    return path[platform].join(...args);
   }
 
   private _getAddMethod(sheet: SheetValues<R>) {
@@ -239,27 +261,5 @@ export default class OneDriveXlsxFileEditor<R extends Row> {
     } catch (err) {
       return err as Error;
     }
-  }
-
-  public readonly isNew: boolean = false;
-  public readonly filepath: string;
-  public file: xlsx.WorkBook;
-  public sheets: SheetObject<R>[] = [];
-  public filename: string;
-
-  public addSheet(name: string, keys: string[]): Error | null {
-    if (Object.prototype.hasOwnProperty.call(this.file.Sheets, name)) {
-      throw new Error("Sheet already in book");
-    }
-
-    const worksheet = xlsx.utils.aoa_to_sheet([keys]);
-
-    xlsx.utils.book_append_sheet(this.file, worksheet, name);
-
-    return this._tryWrite();
-  }
-
-  public getSheet(name: string) {
-    return this._parseSheet(name);
   }
 }

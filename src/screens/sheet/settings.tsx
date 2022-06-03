@@ -4,6 +4,10 @@ import { useFile } from "../../contexts/file";
 import * as deleteStorage from "../../lib/deleteStorage";
 import * as keepOpenStorage from "../../lib/keepOpenStorage";
 
+function withOneDrive(filename: string) {
+  return `file:///${window.api["onedrive:dir"]}/${filename}.xlsx`;
+}
+
 function Settings() {
   const { filename, refetchFile } = useFile();
 
@@ -48,6 +52,16 @@ function Settings() {
     }
   }
 
+  async function handleSaveBackup() {
+    const response = await window.api["sheet:backup"]();
+
+    if (response instanceof Error) {
+      toast.error(response.message);
+    } else {
+      toast.success("Archivo guardado en Descargas");
+    }
+  }
+
   React.useEffect(() => {
     toast.dismiss();
   }, []);
@@ -61,11 +75,20 @@ function Settings() {
         <div>
           <b>Recordar este archivo</b>
           <p>
-            Al entrar a la aplicación no se requerirá que seleccione un archivo
+            Al entrar a la aplicación no se requerirá que seleccione un archivo.
           </p>
         </div>
         <div>
           <input type="checkbox" checked={keepOpen} onChange={handleKeepOpen} />
+        </div>
+      </div>
+      <div className="page-body settings-check">
+        <div>
+          <b>Guardar copia de seguridad</b>
+          <p>Descarga una copia de seguridad de este archivo.</p>
+        </div>
+        <div>
+          <button onClick={handleSaveBackup}>Guardar</button>
         </div>
       </div>
       <div className="page-body settings-recover">

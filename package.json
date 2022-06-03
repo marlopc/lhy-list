@@ -2,7 +2,7 @@
   "name": "lhy-monitor",
   "productName": "Lo Hice Yo",
   "version": "0.1.0",
-  "description": "Desktop application that interacts with Lo Hice Yo's inventory",
+  "description": "Desktop application to interacts with Lo Hice Yo's inventory",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
@@ -11,9 +11,9 @@
     "publish": "electron-forge publish",
     "lint": "eslint ."
   },
-  "keywords": [],
+  "keywords": ["inventory", "sheets", "list"],
   "author": {
-    "name": "marlopc",
+    "name": "Lucas Panaro",
     "email": "lucaspanaro1@gmail.com"
   },
   "license": "MIT",
@@ -24,24 +24,19 @@
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "Lo Hice Yo"
+            "exe": "lo-hice-yo",
+            "iconUrl": "./src/assets/images/logo.ico",
+            "name": "Lo Hice Yo",
+            "setupExe": "lo-hice-yo-installer",
+            "setupMsi": "lo-hice-yo-installer",
+            "title": "Lo Hice Yo"
           }
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin"
-          ]
         },
         {
           "name": "@electron-forge/maker-deb",
           "config": {
             "name": "Lo Hice Yo"
           }
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
         }
       ],
       "plugins": [
@@ -96,6 +91,7 @@
   },
   "dependencies": {
     "dotenv": "^16.0.1",
+    "downloads-folder": "^3.0.3",
     "electron-squirrel-startup": "^1.0.0",
     "fuse.js": "^6.6.2",
     "nanoid": "^3.3.4",

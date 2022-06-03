@@ -3,7 +3,9 @@ import { SheetValues } from "./lib/xlsx";
 import type { ProductRow } from "./types";
 
 export interface Api {
+  "onedrive:dir": string;
   "onedrive:read": () => Promise<string[] | Error>;
+  "sheet:backup": () => Promise<void | Error>;
   "sheet:load": (
     filename: string
   ) => Promise<SheetValues<ProductRow>["rows"] | Error>;
@@ -16,7 +18,9 @@ export interface Api {
 }
 
 const api: Api = {
+  "onedrive:dir": process.env.OneDrive,
   "onedrive:read": () => ipcRenderer.invoke("onedrive:read"),
+  "sheet:backup": () => ipcRenderer.invoke("sheet:backup"),
   "sheet:load": (filename) => ipcRenderer.invoke("sheet:load", filename),
   "row:add": (row) => ipcRenderer.invoke("row:add", row),
   "row:update": (id, defaults) =>
