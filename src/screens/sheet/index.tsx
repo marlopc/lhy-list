@@ -4,7 +4,7 @@ import Form from "./form";
 import Settings from "./settings";
 import Table from "./table";
 import { BackArrowIcon, SettingsIcon, AddIcon } from "../../components/icons";
-import * as keepOpenStorage from "../../lib/keepOpenStorage";
+import storage from "../../lib/storage";
 
 export type SheetScreen = "list" | "form" | "settings";
 
@@ -19,7 +19,7 @@ function Sheet() {
       setEditingId(null);
       setScreen("list");
     } else {
-      keepOpenStorage.clear();
+      storage.session.clear();
       unloadFile();
     }
   }

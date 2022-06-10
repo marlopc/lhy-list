@@ -10,7 +10,7 @@
     "plugin:import/electron",
     "plugin:import/typescript",
     "google",
-    "prettier"
+    "plugin:prettier/recommended"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -22,9 +22,10 @@
   },
   "plugins": ["react", "@typescript-eslint", "prettier"],
   "rules": {
+    "prettier/prettier": "error",
     "require-jsdoc": "off",
     "@typescript-eslint/no-unused-vars": ["error", {
-      "ignoreRestSibblings": true,
+      "ignoreRestSiblings": true
     }]
   },
   "settings": {

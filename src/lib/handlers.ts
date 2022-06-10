@@ -1,17 +1,25 @@
-import fs from "fs/promises";
-import { existsSync } from "fs";
+import fs from "fs";
 import path from "path";
 import { IpcMain } from "electron";
 import type { ProductRow } from "../types";
 import XlsxFileEditor from "./xlsx";
-import downloadsDir from "downloads-folder";
 
 let globalFile: XlsxFileEditor<ProductRow> = null;
+
+function generateDownloadDest(filename: string, number?: number) {
+  const filePrefix = `copia${number ?? ""}-`;
+
+  return path.join(
+    process.env.USERPROFILE,
+    "Downloads",
+    `${filePrefix}${filename}`
+  );
+}
 
 function withHandlers(main: IpcMain) {
   main.handle("onedrive:read", async () => {
     try {
-      const files = await fs.readdir(process.env.OneDrive);
+      const files = fs.readdirSync(process.env.OneDrive);
 
       const xlsxFiles = files.reduce((acc, file) => {
         return file.endsWith(".xlsx")
@@ -20,7 +28,7 @@ function withHandlers(main: IpcMain) {
       }, []);
 
       return xlsxFiles;
-    } catch {
+    } catch (error) {
       return new Error("No se pudo leer OneDrive");
     }
   });
@@ -28,23 +36,17 @@ function withHandlers(main: IpcMain) {
   main.handle("sheet:backup", async () => {
     if (!globalFile) return;
 
-    function generateDest(number?: number) {
-      const filePrefix = `copia${number ?? ""}-`;
-
-      return path.join(downloadsDir(), `${filePrefix}${globalFile.filename}`);
-    }
-
     try {
       let dest: string;
       let prefix: number = null;
 
       do {
-        dest = generateDest(prefix);
+        dest = generateDownloadDest(globalFile.filename, prefix);
         prefix++;
-      } while (existsSync(dest));
+      } while (fs.existsSync(dest));
 
-      await fs.copyFile(globalFile.filepath, dest);
-    } catch {
+      fs.copyFileSync(globalFile.filepath, dest);
+    } catch (error) {
       return new Error("Error copiando el archivo");
     }
   });
@@ -52,7 +54,7 @@ function withHandlers(main: IpcMain) {
   main.handle("sheet:load", (_, filename: string) => {
     try {
       if (!globalFile || globalFile.filename !== filename) {
-        const keys: (keyof ProductRow)[] = ["nombre", "precio", "fecha"];
+        const keys: (keyof ProductRow)[] = ["nombre", "precio", "modificado"];
 
         globalFile = new XlsxFileEditor<ProductRow>(
           {

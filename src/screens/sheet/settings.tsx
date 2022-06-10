@@ -1,30 +1,27 @@
 import React from "react";
 import { toast } from "react-hot-toast";
 import { useFile } from "../../contexts/file";
-import * as deleteStorage from "../../lib/deleteStorage";
-import * as keepOpenStorage from "../../lib/keepOpenStorage";
+import storage from "../../lib/storage";
 
-function withOneDrive(filename: string) {
-  return `file:///${window.api["onedrive:dir"]}/${filename}.xlsx`;
-}
+const { trash, session } = storage;
 
 function Settings() {
   const { filename, refetchFile } = useFile();
 
-  const [recover, setRecover] = React.useState(deleteStorage.read(filename));
-  const [keepOpen, setKeepOpen] = React.useState(
-    keepOpenStorage.matches(filename)
+  const [deletedFiles, setDeletedFiles] = React.useState(trash.list(filename));
+  const [isCurrentSession, setIsCurrentSession] = React.useState(
+    session.matches(filename)
   );
 
-  async function handleRecover(id: string) {
-    const values = deleteStorage.recover(id);
+  async function handleRestore(id: string) {
+    const values = trash.restore(id);
 
     const response = await window.api["row:add"](values);
 
     if (response instanceof Error) {
       toast.error(`Error al recuperar: ${response.message}`);
 
-      deleteStorage.push({ id, ...values }, filename);
+      trash.push({ id, ...values }, filename);
     } else {
       toast.success("Producto recuperado", {
         position: "bottom-left",
@@ -33,26 +30,26 @@ function Settings() {
       refetchFile();
     }
 
-    setRecover(deleteStorage.read(filename));
+    setDeletedFiles(trash.list(filename));
   }
 
-  function handleClearDeletedStorage() {
-    deleteStorage.clear(filename);
+  function handleClearTrash() {
+    trash.clear(filename);
 
-    setRecover(deleteStorage.read(filename));
+    setDeletedFiles(trash.list(filename));
   }
 
-  function handleKeepOpen(e: React.ChangeEvent<HTMLInputElement>) {
-    setKeepOpen(e.target.checked);
+  function handleToggleSession(e: React.ChangeEvent<HTMLInputElement>) {
+    setIsCurrentSession(e.target.checked);
 
     if (e.target.checked) {
-      keepOpenStorage.set(filename);
+      session.set(filename);
     } else {
-      keepOpenStorage.clear();
+      session.clear();
     }
   }
 
-  async function handleSaveBackup() {
+  async function handleDownloadBackup() {
     const response = await window.api["sheet:backup"]();
 
     if (response instanceof Error) {
@@ -79,7 +76,11 @@ function Settings() {
           </p>
         </div>
         <div>
-          <input type="checkbox" checked={keepOpen} onChange={handleKeepOpen} />
+          <input
+            type="checkbox"
+            checked={isCurrentSession}
+            onChange={handleToggleSession}
+          />
         </div>
       </div>
       <div className="page-body settings-check">
@@ -88,22 +89,22 @@ function Settings() {
           <p>Descarga una copia de seguridad de este archivo.</p>
         </div>
         <div>
-          <button onClick={handleSaveBackup}>Guardar</button>
+          <button onClick={handleDownloadBackup}>Guardar</button>
         </div>
       </div>
       <div className="page-body settings-recover">
         <div>
           <b>Recuperar eliminados</b>
-          <button onClick={handleClearDeletedStorage}>Olvidar todos</button>
+          <button onClick={handleClearTrash}>Olvidar todos</button>
         </div>
         <div>
-          {recover.length ? (
+          {deletedFiles.length ? (
             <ul>
-              {recover.map((row) => (
+              {deletedFiles.map((row) => (
                 <li key={row.value.id}>
-                  <button onClick={() => handleRecover(row.value.id)}>
+                  <button onClick={() => handleRestore(row.value.id)}>
                     <b>{row.value.nombre}</b>
-                    <p>{row.value.precio}</p>
+                    <p>$ {row.value.precio}</p>
                   </button>
                 </li>
               ))}

@@ -1,6 +1,6 @@
 {
   "name": "lhy-monitor",
-  "productName": "Lo Hice Yo",
+  "productName": "LoHiceYo",
   "version": "0.1.0",
   "description": "Desktop application to interacts with Lo Hice Yo's inventory",
   "main": ".webpack/main",
@@ -9,9 +9,17 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "eslint ."
+    "lint": "eslint \"src/**/*.+(ts|tsx|js)\"",
+    "lint:fix": "npm run lint -- --fix",
+    "prettier": "prettier .",
+    "prettier:write": "npm run prettier -- --write",
+    "test": "jest"
   },
-  "keywords": ["inventory", "sheets", "list"],
+  "keywords": [
+    "inventory",
+    "sheets",
+    "list"
+  ],
   "author": {
     "name": "Lucas Panaro",
     "email": "lucaspanaro1@gmail.com"
@@ -25,8 +33,7 @@
           "name": "@electron-forge/maker-squirrel",
           "config": {
             "exe": "lo-hice-yo",
-            "iconUrl": "./src/assets/images/logo.ico",
-            "name": "Lo Hice Yo",
+            "name": "LoHiceYo",
             "setupExe": "lo-hice-yo-installer",
             "setupMsi": "lo-hice-yo-installer",
             "title": "Lo Hice Yo"
@@ -69,7 +76,11 @@
     "@electron-forge/maker-squirrel": "^6.0.0-beta.63",
     "@electron-forge/maker-zip": "^6.0.0-beta.63",
     "@electron-forge/plugin-webpack": "^6.0.0-beta.63",
+    "@testing-library/jest-dom": "^5.16.4",
+    "@testing-library/react": "^13.3.0",
     "@types/google-spreadsheet": "^3.2.2",
+    "@types/jest": "^28.1.1",
+    "@types/nanoid": "^3.0.0",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.5",
     "@typescript-eslint/eslint-plugin": "^5.26.0",
@@ -84,14 +95,19 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.30.0",
     "fork-ts-checker-webpack-plugin": "^6.5.2",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^28.1.0",
+    "jest-environment-jsdom": "^28.1.0",
+    "jsdom": "^19.0.0",
     "node-loader": "^2.0.0",
+    "prettier": "^2.6.2",
     "style-loader": "^3.3.1",
+    "ts-jest": "^28.0.4",
     "ts-loader": "^9.3.0",
     "typescript": "~4.5.4"
   },
   "dependencies": {
     "dotenv": "^16.0.1",
-    "downloads-folder": "^3.0.3",
     "electron-squirrel-startup": "^1.0.0",
     "fuse.js": "^6.6.2",
     "nanoid": "^3.3.4",

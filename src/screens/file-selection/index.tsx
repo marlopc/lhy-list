@@ -1,8 +1,8 @@
-import React, { FormEvent } from "react";
+import React from "react";
 import { toast } from "react-hot-toast";
 import File from "../../components/file";
 import { useFile } from "../../contexts/file";
-import * as keepOpenStorage from "../../lib/keepOpenStorage";
+import storage from "../../lib/storage";
 
 function FileSelection() {
   const [files, setFiles] = React.useState([]);
@@ -22,10 +22,10 @@ function FileSelection() {
   }, []);
 
   React.useEffect(() => {
-    const keepOpenFile = keepOpenStorage.get();
+    const sessionFile = storage.session.get();
 
-    if (keepOpenFile) {
-      loadFile(keepOpenFile);
+    if (sessionFile) {
+      loadFile(sessionFile);
     } else {
       getFiles();
     }
@@ -41,7 +41,7 @@ function FileSelection() {
     loadFile(filename);
   }
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     // @ts-ignore
     const filename = e.target.filename.value;
 

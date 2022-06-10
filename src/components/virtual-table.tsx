@@ -1,9 +1,10 @@
-import React, { MouseEvent } from "react";
+import React from "react";
 import type { ProductRow } from "../types";
 import { useFile } from "../contexts/file";
 import { useVirtual } from "react-virtual";
 import { toast, CheckmarkIcon, Toast } from "react-hot-toast";
-import * as deleteStorage from "../lib/deleteStorage";
+import storage from "../lib/storage";
+import { priceToString } from "../lib/utils";
 
 function VirtualTable({
   editRow,
@@ -18,9 +19,8 @@ function VirtualTable({
 
   const virtualizer = useVirtual({
     size: rows.length,
+    estimateSize: React.useCallback(() => 100, []),
     parentRef,
-    estimateSize: React.useCallback(() => 80, []),
-    overscan: 5,
   });
 
   async function handleDelete(id: string) {
@@ -29,10 +29,10 @@ function VirtualTable({
     if (deleted instanceof Error) {
       toast.error(deleted.message);
     } else {
-      deleteStorage.push(deleted, filename);
+      storage.trash.push(deleted, filename);
 
       const handleUndo = async function handleUndo(t: Toast) {
-        const recovered = deleteStorage.recover(deleted.id);
+        const recovered = storage.trash.restore(deleted.id);
 
         toast.dismiss(t.id);
 
@@ -69,7 +69,7 @@ function VirtualTable({
     refetchFile();
   }
 
-  function handleClick(e: MouseEvent<HTMLUListElement>) {
+  function handleClick(e: React.MouseEvent<HTMLUListElement>) {
     const { tagName } = e.target as HTMLElement;
 
     if (tagName !== "BUTTON") {
@@ -104,26 +104,35 @@ function VirtualTable({
             ref={row.measureRef}
             className="table-listitem"
             data-row={rows[row.index].id}
+            style={{
+              height: `${row.size}px`,
+              transform: `translateY(${row.start}px)`,
+            }}
           >
-            <div className="table-listitem-values">
-              <p>{rows[row.index].nombre}</p>
-              <b>$ {rows[row.index].precio}</b>
-            </div>
-            <div className="table-listitem-actions">
-              <button
-                name="delete"
-                type="button"
-                className="table-listitem-action"
-              >
-                Eliminar
-              </button>
-              <button
-                name="edit"
-                type="button"
-                className="table-listitem-action"
-              >
-                Editar
-              </button>
+            <div className="table-listitem-inner">
+              <div className="table-listitem-values">
+                <p>{rows[row.index].nombre}</p>
+                <b>$ {priceToString(rows[row.index].precio)}</b>
+                <small>
+                  Última actualización: {rows[row.index].modificado}
+                </small>
+              </div>
+              <div className="table-listitem-actions">
+                <button
+                  name="delete"
+                  type="button"
+                  className="table-listitem-action"
+                >
+                  Eliminar
+                </button>
+                <button
+                  name="edit"
+                  type="button"
+                  className="table-listitem-action"
+                >
+                  Editar
+                </button>
+              </div>
             </div>
           </li>
         ))}

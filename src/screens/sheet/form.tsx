@@ -27,7 +27,7 @@ function Form({ closeForm, rowId }: { closeForm: () => void; rowId?: string }) {
     const values = {
       nombre: form.nombre.trim(),
       precio: Number(form.precio),
-      fecha: new Date().toLocaleDateString(),
+      modificado: new Date().toLocaleString(),
     };
 
     let success = false;
