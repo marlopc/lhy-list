@@ -1,8 +1,8 @@
 {
   "name": "lhy-list",
   "productName": "Lo Hice Yo - Lista",
-  "version": "0.1.0",
-  "description": "Desktop application to interacts with Lo Hice Yo's inventory",
+  "version": "0.1.1",
+  "description": "List and edit products from the OneDrive's folder",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
