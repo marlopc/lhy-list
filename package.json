@@ -1,6 +1,6 @@
 {
-  "name": "lhy-monitor",
-  "productName": "LoHiceYo",
+  "name": "lhy-list",
+  "productName": "Lo Hice Yo - Lista",
   "version": "0.1.0",
   "description": "Desktop application to interacts with Lo Hice Yo's inventory",
   "main": ".webpack/main",
@@ -32,11 +32,7 @@
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "exe": "lo-hice-yo",
-            "name": "LoHiceYo",
-            "setupExe": "lo-hice-yo-installer",
-            "setupMsi": "lo-hice-yo-installer",
-            "title": "Lo Hice Yo"
+            "iconUrl": "https://raw.githubusercontent.com/marlopc/lhy-list/main/src/assets/images/icon.ico"
           }
         },
         {
