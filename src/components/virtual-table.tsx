@@ -19,7 +19,7 @@ function VirtualTable({
 
   const virtualizer = useVirtual({
     size: rows.length,
-    estimateSize: React.useCallback(() => 100, []),
+    estimateSize: React.useCallback(() => 110, []),
     parentRef,
   });
 
@@ -86,8 +86,6 @@ function VirtualTable({
       handleDelete(row);
     } else if (name === "edit") {
       editRow(row);
-    } else {
-      return;
     }
   }
 
@@ -111,7 +109,10 @@ function VirtualTable({
           >
             <div className="table-listitem-inner">
               <div className="table-listitem-values">
-                <p>{rows[row.index].nombre}</p>
+                <p className="table-listitem-name">{rows[row.index].nombre}</p>
+                <p className="table-listitem-category">
+                  {rows[row.index].categoria}
+                </p>
                 <b>$ {priceToString(rows[row.index].precio)}</b>
                 <small>
                   Última actualización: {rows[row.index].modificado}

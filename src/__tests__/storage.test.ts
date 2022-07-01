@@ -3,10 +3,14 @@ import storage, { LabeledRow } from "../lib/storage";
 
 function productFactory(): () => ProductRow {
   let id = 1;
+  const category = ["category-1", "category-2", "category-3"][
+    Math.floor(Math.random() * 3)
+  ];
 
   return () => ({
     id: id.toString(),
     modificado: new Date().toLocaleString(),
+    categoria: category,
     nombre: `Producto-${id++}`,
     precio: 300,
   });

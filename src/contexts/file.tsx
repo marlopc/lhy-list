@@ -81,7 +81,7 @@ function FileProvider({ children }: { children: React.ReactNode }) {
 
       return true;
     },
-    [state.filename]
+    [state.filename, unloadFile]
   );
 
   React.useEffect(() => {
@@ -100,7 +100,7 @@ function FileProvider({ children }: { children: React.ReactNode }) {
     if (state.filename) {
       loadAndNotify();
     }
-  }, [state.filename]);
+  }, [state.filename, fetchFile]);
 
   return (
     <fileContext.Provider

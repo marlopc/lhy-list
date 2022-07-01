@@ -54,7 +54,12 @@ function withHandlers(main: IpcMain) {
   main.handle("sheet:load", (_, filename: string) => {
     try {
       if (!globalFile || globalFile.filename !== filename) {
-        const keys: (keyof ProductRow)[] = ["nombre", "precio", "modificado"];
+        const keys: (keyof ProductRow)[] = [
+          "nombre",
+          "precio",
+          "categoria",
+          "modificado",
+        ];
 
         globalFile = new XlsxFileEditor<ProductRow>(
           {

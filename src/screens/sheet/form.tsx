@@ -1,9 +1,11 @@
 import React from "react";
 import { useFile } from "../../contexts/file";
 import { toast } from "react-hot-toast";
+import useFilteredSheet from "../../hooks/use-filtered-sheet";
 
 function Form({ closeForm, rowId }: { closeForm: () => void; rowId?: string }) {
   const { sheet, refetchFile } = useFile();
+  const { categories } = useFilteredSheet(sheet);
 
   const initialValues = React.useMemo(
     () => rowId && sheet.find((row) => row.id === rowId),
@@ -12,20 +14,26 @@ function Form({ closeForm, rowId }: { closeForm: () => void; rowId?: string }) {
 
   const isUpdate = !!initialValues?.id;
 
-  const [form, setForm] = React.useState<{ nombre: string; precio: string }>({
+  const [form, setForm] = React.useState<{
+    nombre: string;
+    categoria: string;
+    precio: string;
+  }>({
     nombre: initialValues?.nombre ?? "",
+    categoria: initialValues?.categoria ?? "",
     precio: initialValues?.precio.toString() ?? "",
   });
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!form.nombre.trim() || !form.precio) {
+    if (!form.nombre.trim() || !form.categoria.trim() || !form.precio) {
       return;
     }
 
     const values = {
       nombre: form.nombre.trim(),
+      categoria: form.categoria.trim(),
       precio: Number(form.precio),
       modificado: new Date().toLocaleString(),
     };
@@ -77,6 +85,13 @@ function Form({ closeForm, rowId }: { closeForm: () => void; rowId?: string }) {
     });
   }
 
+  function handleCategoryChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    setForm({
+      ...form,
+      categoria: e.target.value,
+    });
+  }
+
   const title = isUpdate ? (
     <>
       Editando <b>{initialValues.nombre}</b>
@@ -100,6 +115,30 @@ function Form({ closeForm, rowId }: { closeForm: () => void; rowId?: string }) {
             value={form.nombre}
             placeholder="Ej: Acrílico azul"
           />
+        </div>
+        <div className="form-input-category">
+          <div className="form-input">
+            <label htmlFor="categoria">Categoría</label>
+            <input
+              type="text"
+              name="categoria"
+              onChange={handleChange}
+              value={form.categoria}
+              placeholder="Ej: Pinturas"
+            />
+          </div>
+          <select onChange={handleCategoryChange} value={form.categoria}>
+            <option
+              value={categories.includes(form.categoria) ? "" : form.categoria}
+            >
+              Nuevo
+            </option>
+            {categories.map((category) => (
+              <option value={category} key={category}>
+                {category}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="form-input">
           <label htmlFor="precio">Precio</label>

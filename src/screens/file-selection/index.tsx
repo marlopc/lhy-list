@@ -29,7 +29,7 @@ function FileSelection() {
     } else {
       getFiles();
     }
-  }, []);
+  }, [getFiles, loadFile]);
 
   async function handleSelect(filename: string) {
     const files = await getFiles();
